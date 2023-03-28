@@ -1,5 +1,6 @@
 package com.wyj.test.web.response;
 
+import com.plexpt.chatgpt.entity.chat.Message;
 import com.wyj.test.utils.JsonUtils;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,8 @@ public class ChatCompletion implements Serializable {
     //本次的
     private String delta;
     private Detail detail;
+
+    private List<Message> history;
 
     @Data
     @Builder

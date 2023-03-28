@@ -5,28 +5,26 @@ import com.plexpt.chatgpt.ChatGPTStream;
 import com.plexpt.chatgpt.entity.billing.CreditGrantsResponse;
 import com.plexpt.chatgpt.entity.chat.ChatCompletion;
 import com.plexpt.chatgpt.entity.chat.Message;
-import com.plexpt.chatgpt.listener.ConsoleStreamListener;
-import com.plexpt.chatgpt.listener.SseStreamListener;
 import com.plexpt.chatgpt.util.Proxys;
+import com.wyj.test.utils.JsonUtils;
 import okhttp3.sse.EventSourceListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.net.Proxy;
-import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ChatGptCore {
 
 
     public void init() {
-        Proxy proxy = Proxys.http("127.0.0.1", 7890);
+//        Proxy proxy = Proxys.http("127.0.0.1", 7890);
 
         ChatGPT chatGPT = ChatGPT.builder()
                 .apiKey("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")
                 .timeout(900)
-                .proxy(proxy)
+//                .proxy(proxy)
                 .apiHost("https://api.openai.com/") //代理地址
                 .build()
                 .init();
@@ -48,20 +46,21 @@ public class ChatGptCore {
 
     @Value("${chatgpt.apikey}")
     private String chatGptApiKey;
-    public String chat(String prompt, EventSourceListener listener) {
-//        Proxy proxy = Proxys.http("127.0.0.1", 7890);
+
+    public String chat(List<Message> prompts, EventSourceListener listener, String trace) {
+        Proxy proxy = Proxys.http("127.0.0.1", 7890);
 
         ChatGPTStream chatGPTStream = ChatGPTStream.builder()
                 .timeout(600)
                 .apiKey(chatGptApiKey)
-//                .proxy(proxy)
+                .proxy(proxy)
                 .apiHost("https://api.openai.com/")
                 .build()
                 .init();
 
-        Message message = Message.of(prompt);
+        System.out.println(trace + ":debug,prompt=" + JsonUtils.toJson(prompts));
         ChatCompletion chatCompletion = ChatCompletion.builder()
-                .messages(Arrays.asList(message))
+                .messages(prompts)
                 .build();
         chatGPTStream.streamChatCompletion(chatCompletion, listener);
         return null;
