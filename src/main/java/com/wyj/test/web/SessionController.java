@@ -80,8 +80,8 @@ public class SessionController {
         servletResponse.setCharacterEncoding("UTF-8");
         String ip = getIP(servletRequest);
         String userAgent = servletRequest.getHeader("user-agent");
-        print("ip:" + ip + " in, userAgent:" + userAgent);
-        print("ip:" + ip + " request, prompt:" + request.getPrompt());
+        print("call-ip:" + ip + " in, userAgent:" + userAgent);
+        print("content-ip:" + ip + " request, prompt:" + request.getPrompt());
         ipHost.put(ip, DateUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss") + "," + userAgent);
 
         PrintWriter printWriter = servletResponse.getWriter();
@@ -125,7 +125,7 @@ public class SessionController {
 
             @Override
             public void onClosed(EventSource eventSource) {
-                print("ip:" + ip + " resp, content:" + respMessage.toString());
+                print("content-ip:" + ip + " resp, content:" + respMessage.toString());
 
                 super.onClosed(eventSource);
                 ChatCompletion completion = ChatCompletion.of(id, parentMessageId, null, respMessage.toString(), true);
