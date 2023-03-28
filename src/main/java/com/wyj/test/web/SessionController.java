@@ -1,5 +1,6 @@
 package com.wyj.test.web;
 
+import com.alibaba.fastjson2.util.DateUtils;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.plexpt.chatgpt.ChatGPTStream;
@@ -14,21 +15,26 @@ import com.wyj.test.utils.JsonUtils;
 import com.wyj.test.web.request.ChatRequest;
 import okhttp3.sse.EventSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.Proxy;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
 @RestController
 public class SessionController {
+
+    private Map<String, String> ipHost = new ConcurrentSkipListMap<>();
 
     private Cache<String, List<Message>> cache = Caffeine.newBuilder()
             .expireAfterWrite(10, TimeUnit.MINUTES)
@@ -36,6 +42,9 @@ public class SessionController {
             .maximumSize(10000)
 //            .maximumWeight()
             .build();
+
+    public SessionController() throws UnsupportedEncodingException {
+    }
 
     @PostMapping("/api/session")
     public Response session() {
@@ -71,8 +80,9 @@ public class SessionController {
         servletResponse.setCharacterEncoding("UTF-8");
         String ip = getIP(servletRequest);
         String userAgent = servletRequest.getHeader("user-agent");
-        System.out.println("ip:" + ip + " in, userAgent:" + userAgent);
-        System.out.println("ip:" + ip + " request, prompt:" + request.getPrompt());
+        print("ip:" + ip + " in, userAgent:" + userAgent);
+        print("ip:" + ip + " request, prompt:" + request.getPrompt());
+        ipHost.put(ip, DateUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss") + "," + userAgent);
 
         PrintWriter printWriter = servletResponse.getWriter();
 
@@ -115,7 +125,7 @@ public class SessionController {
 
             @Override
             public void onClosed(EventSource eventSource) {
-                System.out.println("ip:" + ip + " resp, content:" + respMessage.toString());
+                print("ip:" + ip + " resp, content:" + respMessage.toString());
 
                 super.onClosed(eventSource);
                 ChatCompletion completion = ChatCompletion.of(id, parentMessageId, null, respMessage.toString(), true);
@@ -139,6 +149,26 @@ public class SessionController {
             newHistory = newHistory.subList(newHistory.size() - 20, newHistory.size());
         }
         cache.put(id, newHistory);
+    }
+
+    static PrintWriter out;
+
+    static {
+        try {
+            out = new PrintWriter(new OutputStreamWriter(System.out, "UTF-8"), true);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void print(String str) {
+        out.println(str);
+    }
+
+        @Scheduled(cron = "0 0/10 * * * ?")
+//    @Scheduled(cron = "1 * * * * *")
+    public void printUserAccess() {
+        print("printUserAccess:" + ipHost);
     }
 
 
