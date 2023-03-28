@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wyj.test.data.mapper.StrategyMapper">
+    <resultMap id="BaseResultMap" type="com.wyj.test.data.po.StrategyPO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="strategy_id" jdbcType="BIGINT" property="strategyId"/>
+        <result column="strategy_type" jdbcType="INTEGER" property="strategyType"/>
+        <result column="adjust_value" jdbcType="DECIMAL" property="adjustValue"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="store_id" jdbcType="BIGINT" property="storeId"/>
+        <result column="store_name" jdbcType="VARCHAR" property="storeName"/>
+        <result column="channel_id" jdbcType="BIGINT" property="channelId"/>
+        <result column="item_id" jdbcType="BIGINT" property="itemId"/>
+        <result column="operator" jdbcType="VARCHAR" property="operator"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="pricing_type" jdbcType="INTEGER" property="pricingType"/>
+        <result column="discount_value" jdbcType="BIGINT" property="discountValue"/>
+        <result column="online_price" jdbcType="DECIMAL" property="onlinePrice"/>
+        <result column="strategy_price" jdbcType="DECIMAL" property="strategyPrice"/>
+        <result column="satisfy_value" jdbcType="DECIMAL" property="satisfyValue"/>
+        <result column="merchant_ratio" jdbcType="DECIMAL" property="merchantRatio"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, strategy_id, strategy_type, adjust_value, start_time, end_time, store_id, channel_id,
+    item_id, pricing_type, store_name, discount_value, online_price, strategy_price, operator, create_time,
+    update_time, satisfy_value, merchant_ratio
+    </sql>
+
+    <sql id="Base_Column_List_For_Insert">
+        version
+        , create_time, update_time, name, store_id, user_layer, effect_time,
+       biz_line_id, status, city_id, cost_type, type, app_name, commit_uid,
+        pop_id, down_time, remark, cost_id, feature, template_id, discount,
+         is_drop, operator, modify_app_name, commit_user, marketing_channel, item_type
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from price_adjustment_strategy_detail
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <insert id="insert" parameterType="com.wyj.test.data.po.StrategyPO">
+        insert into price_adjustment_strategy_detail (id, strategy_id, strategy_type,
+        adjust_value, start_time, end_time,
+        store_id, store_name, channel_id, item_id,
+        pricing_type, discount_value, online_price, strategy_price, merchant_ratio,
+        operator, create_time, update_time
+        )
+        values (#{id,jdbcType=BIGINT}, #{strategyId,jdbcType=BIGINT}, #{strategyType,jdbcType=INTEGER},
+        #{adjustValue,jdbcType=DECIMAL}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
+        #{storeId,jdbcType=BIGINT}, #{storeName,jdbcType=VARCHAR}, #{channelId,jdbcType=BIGINT},
+        #{itemId,jdbcType=BIGINT},
+        #{pricingType,jdbcType=INTEGER}, #{discountValue,jdbcType=BIGINT}, #{onlinePrice,jdbcType=DECIMAL},
+        #{strategyPrice,jdbcType=DECIMAL},
+        #{merchantRatio,jdbcType=DECIMAL},
+        #{operator,jdbcType=VARCHAR}, now(), now()
+        )
+    </insert>
+
+</mapper>
