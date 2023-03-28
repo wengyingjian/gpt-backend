@@ -57,11 +57,21 @@ public class SessionController {
             "Knowledge cutoff: 2021-09-01" +
             "Current date: " + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
+    private String getIP(HttpServletRequest request) {
+        String userIPAddress = request.getHeader("x-forwarded-for");
+        if (userIPAddress == null || userIPAddress.isEmpty()) {
+            userIPAddress = request.getRemoteAddr();
+        }
+        return userIPAddress;
+    }
+
     @PostMapping("/api/chat-process")
     public void process(@RequestBody ChatRequest request, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException, InterruptedException {
         servletResponse.setContentType("application/octet-stream");
         servletResponse.setCharacterEncoding("UTF-8");
-        String ip = servletRequest.getRemoteAddr();
+        String ip = getIP(servletRequest);
+        String userAgent = servletRequest.getHeader("user-agent");
+        System.out.println("ip:" + ip + " in, userAgent:" + userAgent);
         System.out.println("ip:" + ip + " request, prompt:" + request.getPrompt());
 
         PrintWriter printWriter = servletResponse.getWriter();
@@ -115,7 +125,7 @@ public class SessionController {
 
                 flag[0] = true;
             }
-        },ip);
+        }, ip);
         while (!flag[0]) {
             Thread.sleep(100);
         }
