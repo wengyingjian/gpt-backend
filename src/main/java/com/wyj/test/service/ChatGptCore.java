@@ -19,12 +19,12 @@ public class ChatGptCore {
 
 
     public void init() {
-//        Proxy proxy = Proxys.http("127.0.0.1", 7890);
+        Proxy proxy = Proxys.http("127.0.0.1", 7890);
 
         ChatGPT chatGPT = ChatGPT.builder()
                 .apiKey("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")
                 .timeout(900)
-//                .proxy(proxy)
+                .proxy(proxy)
                 .apiHost("https://api.openai.com/") //代理地址
                 .build()
                 .init();
@@ -48,12 +48,12 @@ public class ChatGptCore {
     private String chatGptApiKey;
 
     public String chat(List<Message> prompts, EventSourceListener listener, String trace) {
-        Proxy proxy = Proxys.http("127.0.0.1", 7890);
+//        Proxy proxy = Proxys.http("127.0.0.1", 7890);
 
         ChatGPTStream chatGPTStream = ChatGPTStream.builder()
                 .timeout(600)
                 .apiKey(chatGptApiKey)
-                .proxy(proxy)
+//                .proxy(proxy)
                 .apiHost("https://api.openai.com/")
                 .build()
                 .init();
