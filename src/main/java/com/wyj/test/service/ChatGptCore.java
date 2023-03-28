@@ -49,12 +49,12 @@ public class ChatGptCore {
     @Value("${chatgpt.apikey}")
     private String chatGptApiKey;
     public String chat(String prompt, EventSourceListener listener) {
-        Proxy proxy = Proxys.http("127.0.0.1", 7890);
+//        Proxy proxy = Proxys.http("127.0.0.1", 7890);
 
         ChatGPTStream chatGPTStream = ChatGPTStream.builder()
                 .timeout(600)
                 .apiKey(chatGptApiKey)
-                .proxy(proxy)
+//                .proxy(proxy)
                 .apiHost("https://api.openai.com/")
                 .build()
                 .init();
