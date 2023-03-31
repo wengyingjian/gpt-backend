@@ -83,7 +83,7 @@ public class SessionController {
         print("call-ip:" + ip + " in, userAgent:" + userAgent);
         print("content-ip:" + ip + " request, prompt:" + request.getPrompt());
         ipHost.putIfAbsent(ip, 0);
-        ipHost.putIfAbsent(ip, ipHost.get(ip) + 1);
+        ipHost.put(ip, ipHost.get(ip) + 1);
 
         PrintWriter printWriter = servletResponse.getWriter();
 
