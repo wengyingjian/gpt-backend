@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 public class SessionController {
 
-    private Map<String, String> ipHost = new ConcurrentSkipListMap<>();
+    private Map<String, Integer> ipHost = new ConcurrentSkipListMap<>();
 
     private Cache<String, List<Message>> cache = Caffeine.newBuilder()
             .expireAfterWrite(10, TimeUnit.MINUTES)
@@ -82,7 +82,8 @@ public class SessionController {
         String userAgent = servletRequest.getHeader("user-agent");
         print("call-ip:" + ip + " in, userAgent:" + userAgent);
         print("content-ip:" + ip + " request, prompt:" + request.getPrompt());
-        ipHost.put(ip, DateUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss") + "," + userAgent);
+        ipHost.putIfAbsent(ip, 0);
+        ipHost.putIfAbsent(ip, ipHost.get(ip) + 1);
 
         PrintWriter printWriter = servletResponse.getWriter();
 
@@ -165,7 +166,7 @@ public class SessionController {
         out.println(str);
     }
 
-        @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0 0/30 * * * ?")
 //    @Scheduled(cron = "1 * * * * *")
     public void printUserAccess() {
         print("printUserAccess:" + ipHost);
