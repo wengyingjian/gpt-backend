@@ -105,7 +105,7 @@ public class SessionController {
         }
 
         final boolean[] flag = {false};
-        chatGptCore.chat(prompts, new AbstractStreamListener() {
+        /*chatGptCore.chat(prompts, new AbstractStreamListener() {
             @Override
             public void onOpen(EventSource eventSource, okhttp3.Response response) {
                 super.onOpen(eventSource, response);
@@ -149,7 +149,11 @@ public class SessionController {
         if (newHistory.size() > 20) {
             newHistory = newHistory.subList(newHistory.size() - 20, newHistory.size());
         }
-        cache.put(id, newHistory);
+        cache.put(id, newHistory);*/
+        ChatCompletion completion = ChatCompletion.of(id, parentMessageId, "系统维护", "系统维护", false);
+        printWriter.println(JsonUtils.toJson(completion));
+        printWriter.flush();
+        printWriter.close();
     }
 
     static PrintWriter out;
